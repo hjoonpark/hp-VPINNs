@@ -263,6 +263,10 @@ class VPINN:
 #                               Main
 # =============================================================================    
 if __name__ == "__main__":     
+    print(">>>> START")
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+    tf.logging.set_verbosity(tf.logging.ERROR)
 
     '''
     Hyper-parameters: 
@@ -383,6 +387,7 @@ if __name__ == "__main__":
     w_quad  = WXY_quad_train
     U_ext_total = []
     F_ext_total = []
+    print("NE_x:", NE_x, ", NE_y:", NE_y)
     for ex in range(NE_x):
         for ey in range(NE_y):
             Ntest_elementx  = N_testfcn_total[0][ex]
@@ -412,7 +417,7 @@ if __name__ == "__main__":
     
 #    U_ext_total = np.reshape(U_ext_total, [NE_x, NE_y, N_test_y, N_test_x])
     F_ext_total = np.reshape(F_ext_total, [NE_x, NE_y, N_test_y[0], N_test_x[0]])
-    
+    print("F_ext_total:", F_ext_total.shape)
     ###########################################################################
     # Test points
     delta_test = 0.01
@@ -434,12 +439,15 @@ if __name__ == "__main__":
     model.train(10000 + 1)
     u_pred = model.predict()
 
+    print("model:")
+    print(model)
+    print("u_pred:", u_pred.shape)
 #%%
     ###########################################################################
     # =============================================================================
     #    Plotting
     # =============================================================================
-  
+    print("----- plotting begins -----")
     fontsize = 24
     fig = plt.figure(1)
     plt.tick_params(axis='y', which='both', labelleft='on', labelright='off')
@@ -534,3 +542,4 @@ if __name__ == "__main__":
     plt.savefig(''.join(['Poisson2D_',scheme,'_PntErr','.png']))
     
     
+    print(">>>> DONE")
