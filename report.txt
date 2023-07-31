@@ -1,0 +1,100 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 6 files
+Detected 0 issues that require attention
+--------------------------------------------------------------------------------
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: 'main/'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'main/Poisson-1D/GaussJacobiQuadRule_V3.py'
+ outputting to 'main_v2/Poisson-1D/GaussJacobiQuadRule_V3.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'main/Poisson-1D/hp-VPINN-Poisson-1D.py'
+ outputting to 'main_v2/Poisson-1D/hp-VPINN-Poisson-1D.py'
+--------------------------------------------------------------------------------
+
+27:0: INFO: Renamed 'tf.set_random_seed' to 'tf.compat.v1.set_random_seed'
+46:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+47:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+48:23: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+49:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+50:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+51:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+103:30: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+105:20: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+105:38: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+106:20: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+126:27: INFO: Renamed 'tf.truncated_normal' to 'tf.random.truncated_normal'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'main/Poisson-2D/hp-VPINN-Poisson-2D.py'
+ outputting to 'main_v2/Poisson-2D/hp-VPINN-Poisson-2D.py'
+--------------------------------------------------------------------------------
+
+53:24: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+54:24: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+55:24: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+56:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+57:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+58:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+59:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+60:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+61:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+62:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+131:30: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+134:20: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+135:20: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+155:27: INFO: Renamed 'tf.truncated_normal' to 'tf.random.truncated_normal'
+269:4: INFO: Renamed 'tf.logging.set_verbosity' to 'tf.compat.v1.logging.set_verbosity'
+269:29: INFO: Renamed 'tf.logging.ERROR' to 'tf.compat.v1.logging.ERROR'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'main/Poisson-2D/GaussJacobiQuadRule_V3.py'
+ outputting to 'main_v2/Poisson-2D/GaussJacobiQuadRule_V3.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'main/AdvDiff-Identification/hp-VPINN-AdvDiff-Identification.py'
+ outputting to 'main_v2/AdvDiff-Identification/hp-VPINN-AdvDiff-Identification.py'
+--------------------------------------------------------------------------------
+
+28:0: INFO: Renamed 'tf.set_random_seed' to 'tf.compat.v1.set_random_seed'
+88:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+89:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+90:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+92:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+93:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+95:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+96:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+97:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+98:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+192:30: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+194:20: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+194:38: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+196:20: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+216:27: INFO: Renamed 'tf.truncated_normal' to 'tf.random.truncated_normal'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'main/AdvDiff-Identification/GaussJacobiQuadRule_V3.py'
+ outputting to 'main_v2/AdvDiff-Identification/GaussJacobiQuadRule_V3.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+

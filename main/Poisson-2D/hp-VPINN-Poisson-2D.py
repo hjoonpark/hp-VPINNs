@@ -21,7 +21,7 @@ from GaussJacobiQuadRule_V3 import Jacobi, DJacobi, GaussLobattoJacobiWeights
 import time
 
 np.random.seed(1234)
-tf.set_random_seed(1234)
+tf.random.set_random_seed(1234)
 ###############################################################################
 ###############################################################################
 class VPINN:

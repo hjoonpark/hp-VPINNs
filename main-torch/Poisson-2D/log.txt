@@ -1,0 +1,15 @@
+>>>> START
+/nobackup/joon/1_Projects/hp-VPINNs/main-torch/Poisson-2D/GaussJacobiQuadRule_V3.py:24: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  j = torch.tensor(j).float()
+/nobackup/joon/anaconda3/envs/torch-lap/lib/python3.9/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /opt/conda/conda-bld/pytorch_1670525539683/work/aten/src/ATen/native/TensorShape.cpp:3190.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+N_testfcn_total: 4 4
+NE_x: 4 , NE_y: 4
+N_testfcn_total: [[5, 5, 5, 5], [5, 5, 5, 5]]
+grid_x: tensor([-1.0000, -0.5000,  0.0000,  0.5000,  1.0000])
+grid_y: tensor([-1.0000, -0.5000,  0.0000,  0.5000,  1.0000])
+x_quad: torch.Size([100, 1])
+y_quad: torch.Size([100, 1])
+F_ext_total: torch.Size([4, 4, 5, 5])
+It: 0, Loss: 2.638e+00, Time: 0.75
+It: 100, Loss: 2.490e+00, Time: 30.48

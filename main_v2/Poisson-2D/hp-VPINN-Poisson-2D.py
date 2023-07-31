@@ -154,7 +154,6 @@ class VPINN:
         xavier_stddev = np.sqrt(2/(in_dim + out_dim), dtype=np.float64)
         return tf.Variable(tf.random.truncated_normal([in_dim, out_dim], stddev=xavier_stddev,dtype=tf.float64), dtype=tf.float64)
  
-    
     def neural_net(self, X, weights, biases, a):
         num_layers = len(weights) + 1
         
@@ -269,7 +268,6 @@ if __name__ == "__main__":
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
     tf.compat.v1.disable_eager_execution()
 
-
     '''
     Hyper-parameters: 
         scheme     = is either 'PINNs' or 'VPINNs'
@@ -292,7 +290,6 @@ if __name__ == "__main__":
     N_quad = 10
     N_bound = 80
     N_residual = 100    
-    
 
     ###########################################################################
     def Test_fcn_x(n,x):
@@ -317,7 +314,7 @@ if __name__ == "__main__":
     
     ###########################################################################
     # Boundary points
-    x_up = 2*lhs(1,N_bound)-1
+    x_up = 2*lhs(1,N_bound)-1 # random x
     y_up = np.empty(len(x_up))[:,None]
     y_up.fill(1)
     b_up = np.empty(len(x_up))[:,None]
