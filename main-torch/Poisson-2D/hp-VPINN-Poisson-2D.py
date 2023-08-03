@@ -2,6 +2,7 @@
 ###############################################################################
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from pyDOE import lhs
 from GaussJacobiQuadRule_V3 import Jacobi, DJacobi, GaussLobattoJacobiWeights
@@ -106,12 +107,12 @@ class VPINN(nn.Module):
                     U_NN_element = U_NN_element_1 + U_NN_element_2
 
                 Res_NN_element = (U_NN_element - F_ext_element).view(1,-1)
-                loss_element = torch.mean(torch.square(Res_NN_element))
+                loss_element = torch.linalg.norm(Res_NN_element)
                 self.varloss_total = self.varloss_total + loss_element
  
-        self.lossb = torch.mean(torch.square(self.utrain - self.u_pred_boundary))
+        self.lossb = F.mse_loss(self.utrain, self.u_pred_boundary)
         self.lossv = self.varloss_total
-        self.lossp = torch.mean(torch.square(self.f_pred - self.ftrain))
+        self.lossp = F.mse_loss(self.f_pred, self.ftrain)
         
         if scheme == 'VPINNs':
             self.loss  = 10*self.lossb + self.lossv 
@@ -188,6 +189,8 @@ class VPINN(nn.Module):
 
 ###############################################################################
     def train(self, nIter):
+        print("----- Training starts -----")
+        self.net.train()
         start_time = time.time()
         for it in range(nIter):
             self.optimizer_adam.zero_grad()
@@ -322,19 +325,20 @@ if __name__ == "__main__":
         plt.scatter(xf, yf, s=s, label="residual {}".format(len(xf)))
         plt.scatter(xx.flatten(), yy.flatten(), s=s, label="quadrature {}".format(len(xx)))
         plt.scatter(wxx.flatten(), wyy.flatten(), s=s, label="quadrature weights {}".format(len(wxx)))
-        plt.scatter(grid_x.flatten(), grid_y.flatten(), s=s, label="RHS {}".format(len(grid_x)))
+        # plt.scatter(grid_x.flatten(), grid_y.flatten(), s=s, label="RHS {}".format(len(grid_x)))
         plt.grid()
         plt.gca().set_aspect("equal")
         plt.title("Data points")
         plt.legend(loc="upper right")
         plt.xlim(right=3)
         plt.savefig(os.path.join(out_dir, "data_points"), dpi=150)
-
+        plt.close()
 #    N_testfcn_total = [(len(grid_x)-1)*[N_test_x], (len(grid_y)-1)*[N_test_y]]
     N_testfcn_total = [N_test_x, N_test_y]
     print("N_testfcn_total:", len(N_test_x), len(N_test_y))
 
     #+++++++++++++++++++
+    # x_quad, y_quad: quadrature points
     x_quad  = XY_quad_train[:,0:1]
     y_quad  = XY_quad_train[:,1:2]
     w_quad  = WXY_quad_train
@@ -346,6 +350,7 @@ if __name__ == "__main__":
     print("grid_y:", grid_y)
     print("x_quad:", x_quad.shape)
     print("y_quad:", y_quad.shape)
+    print("w_quad:", w_quad.shape)
     for ex in range(NE_x):
         for ey in range(NE_y):
             Ntest_elementx  = N_testfcn_total[0][ex]
@@ -353,16 +358,33 @@ if __name__ == "__main__":
 
             x_quad_element = grid_x[ex] + (grid_x[ex+1]-grid_x[ex])/2*(x_quad+1)
             y_quad_element = grid_y[ey] + (grid_y[ey+1]-grid_y[ey])/2*(y_quad+1)
+
             jacobian       = ((grid_x[ex+1]-grid_x[ex])/2)*((grid_y[ey+1]-grid_y[ey])/2)
             
-            testx_quad_element = torch.cat([ Test_fcn_x(n,x_quad) for n in range(1, Ntest_elementx+1)])
-            testy_quad_element = torch.cat([ Test_fcn_y(n,y_quad) for n in range(1, Ntest_elementy+1)])
-    
+            testx_quad_element = torch.cat([ Test_fcn_x(n,x_quad)[None, :] for n in range(1, Ntest_elementx+1)])
+            testy_quad_element = torch.cat([ Test_fcn_y(n,y_quad)[None, :] for n in range(1, Ntest_elementy+1)])
+            if 0:
+                plt.figure()
+                # plt.scatter(x_quad_element.flatten(), y_quad_element.flatten(), s=s, label="quad elements {}".format(len(x_quad_element)))
+                # plt.scatter(x_quad.flatten(), y_quad.flatten(), s=s, label="grids {}".format(len(x_quad)))
+                plt.scatter(testx_quad_element.flatten(), testy_quad_element.flatten(), s=s, label="test_quad_element {}".format(len(testy_quad_element)))
+                plt.grid()
+                plt.gca().set_aspect("equal")
+                plt.legend(loc="upper right")
+                plt.xlim(right=3)
+                plt.savefig(os.path.join(out_dir, "quad_element"), dpi=150)
+                plt.close()
+
             u_quad_element = u_ext(x_quad_element, y_quad_element)
             f_quad_element = f_ext(x_quad_element, y_quad_element)
             
-            # U_ext_element = torch.asarray([[jacobian*torch.sum(w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*u_quad_element) for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
-            # F_ext_element0 = torch.asarray([[jacobian*torch.sum(w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element) for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
+            # U_ext_element = torch.tensor([[jacobian*torch.sum(\
+            #                 w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*u_quad_element) \
+            #                 for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
+    
+            # F_ext_element = torch.tensor([[jacobian*torch.sum(\
+            #                 w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element) \
+            #                 for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
             U_ext_element = torch.zeros((Ntest_elementx, Ntest_elementy), dtype=torch.float32)
             F_ext_element = torch.zeros((Ntest_elementx, Ntest_elementy), dtype=torch.float32)
             for k in range(Ntest_elementy):
@@ -372,10 +394,11 @@ if __name__ == "__main__":
 
                     f = jacobian * torch.sum(w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element)
                     F_ext_element[k, r] = f
+            # print("[{}, {}] U_exact: ({:.2f}, {:.2f}), F_exact: ({:.2f}, {:.2f})".format(ex, ey, U_ext_element.min(), U_ext_element.max(), F_ext_element.min(), F_ext_element.max()))
 
             U_ext_total.append(U_ext_element)
             F_ext_total.append(F_ext_element)
-    
+
 #    U_ext_total = torch.reshape(U_ext_total, [NE_x, NE_y, N_test_y, N_test_x])
     F_ext_total = torch.cat(F_ext_total)
     F_ext_total = F_ext_total.view(NE_x, NE_y, N_test_y[0], N_test_x[0])
@@ -399,7 +422,7 @@ if __name__ == "__main__":
     X_u_train.requires_grad = True
     u_train.requires_grad = True
     X_f_train.requires_grad = True
-    f_train.requires_grad = True
+    # f_train.requires_grad = True
     XY_quad_train.requires_grad = True
     model = VPINN(X_u_train, u_train, X_f_train, f_train, XY_quad_train, WXY_quad_train,\
                   U_ext_total, F_ext_total, grid_x, grid_y, N_testfcn_total, X_test, u_test, Net_layer)
@@ -412,6 +435,7 @@ if __name__ == "__main__":
     print("model:")
     print(model)
     print("u_pred:", u_pred.shape)
+
     ###########################################################################
     # =============================================================================
     #    Plotting
@@ -419,7 +443,7 @@ if __name__ == "__main__":
     import numpy as np
     print("----- plotting begins -----")
     fontsize = 24
-    fig = plt.figure(1)
+    fig = plt.figure()
     plt.tick_params(axis='y', which='both', labelleft='on', labelright='off')
     plt.xlabel('$iteration$', fontsize = fontsize)
     plt.ylabel('$loss \,\, values$', fontsize = fontsize)
@@ -429,7 +453,8 @@ if __name__ == "__main__":
     plt.tick_params( labelsize = 20)
     #fig.tight_layout()
     fig.set_size_inches(w=11,h=11)
-    plt.savefig(out_dir.join(['Poisson2D_',scheme,'_loss']))
+    plt.savefig(os.path.join(out_dir, ''.join(['Poisson2D_',scheme,'_loss'])))
+    plt.close()
     
     ###########################################################################
     X_u_train = X_u_train.detach().numpy()
@@ -440,7 +465,7 @@ if __name__ == "__main__":
     x_train_plot, y_train_plot = zip(*X_u_train)
     print("x_train_plot:", X_u_train.min(), X_u_train.max())
     x_f_plot, y_f_plot = zip(*X_f_train)
-    fig, ax = plt.subplots(1)
+    fig, ax = plt.subplots()
     if scheme == 'VPINNs':
         plt.scatter(x_train_plot, y_train_plot, color='red')
         for xc in grid_x:
@@ -463,14 +488,14 @@ if __name__ == "__main__":
     plt.tick_params( labelsize = 20)
     #fig.tight_layout()
     fig.set_size_inches(w=11,h=11)
-    plt.savefig(out_dir.join(['Poisson2D_',scheme,'_Domain']))
-    
+    plt.savefig(os.path.join(out_dir, ''.join(['Poisson2D_',scheme,'_Domain'])))
+    plt.close()
+
     ###########################################################################
     x_test_plot = np.asarray(np.split(X_test[:,0:1].flatten(),len(ytest)))
     y_test_plot = np.asarray(np.split(X_test[:,1:2].flatten(),len(ytest)))
     u_test_plot = np.asarray(np.split(u_test.flatten(),len(ytest)))
     u_pred_plot = np.asarray(np.split(u_pred.flatten(),len(ytest)))
-    
     
     fontsize = 32
     labelsize = 26
@@ -485,9 +510,8 @@ if __name__ == "__main__":
     ax_ext.set_aspect(1)
     #fig.tight_layout()
     fig_ext.set_size_inches(w=11,h=11)
-    plt.savefig(out_dir.join(['Poisson2D_',scheme,'_Exact','.png']))
-    
-    
+    plt.savefig(os.path.join(out_dir, ''.join(['Poisson2D_',scheme,'_Exact','.png'])))
+    plt.close()
     
     fig_pred, ax_pred = plt.subplots(constrained_layout=True)
     CS_pred = ax_pred.contourf(x_test_plot, y_test_plot, u_pred_plot, 100, cmap='jet', origin='lower')
@@ -500,9 +524,8 @@ if __name__ == "__main__":
     ax_pred.set_aspect(1)
     #fig.tight_layout()
     fig_pred.set_size_inches(w=11,h=11)
-    plt.savefig(out_dir.join(['Poisson2D_',scheme,'_Predict','.png']))
-    
-    
+    plt.savefig(os.path.join(out_dir, ''.join(['Poisson2D_',scheme,'_Predict','.png'])))
+    plt.close()
     
     fig_err, ax_err = plt.subplots(constrained_layout=True)
     CS_err = ax_err.contourf(x_test_plot, y_test_plot, abs(u_test_plot - u_pred_plot), 100, cmap='jet', origin='lower')
@@ -515,7 +538,7 @@ if __name__ == "__main__":
     ax_err.set_aspect(1)
     #fig.tight_layout()
     fig_err.set_size_inches(w=11,h=11)
-    plt.savefig(out_dir.join(['Poisson2D_',scheme,'_PntErr','.png']))
-    
+    plt.savefig(os.path.join(out_dir, ''.join(['Poisson2D_',scheme,'_PntErr','.png'])))
+    plt.close()
     
     print(">>>> DONE")

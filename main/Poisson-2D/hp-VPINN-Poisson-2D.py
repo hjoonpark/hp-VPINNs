@@ -399,22 +399,32 @@ if __name__ == "__main__":
             
             testx_quad_element = np.asarray([ Test_fcn_x(n,x_quad)  for n in range(1, Ntest_elementx+1)])
             testy_quad_element = np.asarray([ Test_fcn_y(n,y_quad)  for n in range(1, Ntest_elementy+1)])
-    
+            
             u_quad_element = u_ext(x_quad_element, y_quad_element)
             f_quad_element = f_ext(x_quad_element, y_quad_element)
             
-            U_ext_element = np.asarray([[jacobian*np.sum(\
-                            w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*u_quad_element) \
-                            for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
+            U_ext_element = np.zeros((Ntest_elementx, Ntest_elementy)).astype(np.float32)
+            F_ext_element = np.zeros((Ntest_elementx, Ntest_elementy)).astype(np.float32)
+            
+            for k in range(Ntest_elementy):
+                for r in range(Ntest_elementx):
+                    u = jacobian * np.sum(w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*u_quad_element)
+                    U_ext_element[k, r] = u
+
+                    f = jacobian * np.sum(w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element)
+                    F_ext_element[k, r] = f
+            # U_ext_element = np.asarray([[jacobian*np.sum(\
+            #                 w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*u_quad_element) \
+            #                 for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
     
-            F_ext_element = np.asarray([[jacobian*np.sum(\
-                            w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element) \
-                            for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
+            # F_ext_element = np.asarray([[jacobian*np.sum(\
+            #                 w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element) \
+            #                 for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
             
             U_ext_total.append(U_ext_element)
-    
             F_ext_total.append(F_ext_element)
-    
+            # print("[{}, {}] U_exact: ({:.2f}, {:.2f}), F_exact: ({:.2f}, {:.2f})".format(ex, ey, U_ext_element.min(), U_ext_element.max(), F_ext_element.min(), F_ext_element.max()))
+    assert 0
 #    U_ext_total = np.reshape(U_ext_total, [NE_x, NE_y, N_test_y, N_test_x])
     F_ext_total = np.reshape(F_ext_total, [NE_x, NE_y, N_test_y[0], N_test_x[0]])
     print("F_ext_total:", F_ext_total.shape)

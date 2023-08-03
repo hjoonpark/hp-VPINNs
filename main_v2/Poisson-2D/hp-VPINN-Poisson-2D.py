@@ -409,11 +409,11 @@ if __name__ == "__main__":
             F_ext_element = np.asarray([[jacobian*np.sum(\
                             w_quad[:,0:1]*testx_quad_element[r]*w_quad[:,1:2]*testy_quad_element[k]*f_quad_element) \
                             for r in range(Ntest_elementx)] for k in range(Ntest_elementy)])
-            
+            print("[{}, {}] U_exact: ({:.2f}, {:.2f}), F_exact: ({:.2f}, {:.2f})".format(ex, ey, U_ext_element.min(), U_ext_element.max(), F_exact_element.min(), F_exact_element.max()))
             U_ext_total.append(U_ext_element)
     
             F_ext_total.append(F_ext_element)
-    
+    assert 0
 #    U_ext_total = np.reshape(U_ext_total, [NE_x, NE_y, N_test_y, N_test_x])
     F_ext_total = np.reshape(F_ext_total, [NE_x, NE_y, N_test_y[0], N_test_x[0]])
     print("F_ext_total:", F_ext_total.shape)

@@ -45,6 +45,7 @@ def GaussLobattoJacobiWeights(Q: int,a,b):
     W = []
     X = roots_jacobi(Q-2,a+1,b+1)[0]
     if a == 0 and b==0:
+        # Gauss–Legendre quadrature is a special case of Gauss–Jacobi quadrature with α = β = 0. 
         W = 2/( (Q-1)*(Q)*(Jacobi(Q-1,0,0,X)**2) )
         Wl = 2/( (Q-1)*(Q)*(Jacobi(Q-1,0,0,-1)**2) )
         Wr = 2/( (Q-1)*(Q)*(Jacobi(Q-1,0,0,1)**2) )
